@@ -1,0 +1,8 @@
+{
+    "context": "context/saver/starlab-benchmarks",
+    "name": "saver",
+    "tag": "flex-1",
+    "build_args": {
+        "BENCHMARK": "ghcr.io/kupl/starlab-benchmarks/c:flex-1"
+    }
+}
