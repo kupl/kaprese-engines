@@ -30,6 +30,8 @@ jobs:
     needs:
       - find-configurations
 
+    if: needs.find-configurations.outputs.configures != '[]'
+
     strategy:
       matrix:
         configure: ${{ fromJson(needs.find-configurations.outputs.configures) }}
