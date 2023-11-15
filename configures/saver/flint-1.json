@@ -3,6 +3,6 @@
     "name": "saver",
     "tag": "flint-1",
     "build_args": {
-        "BENCHMARK": "ghcr.io/kupl/starlab-benchmarks/c:flint-1"
+        "BENCHMARK_IMAGE": "ghcr.io/kupl/starlab-benchmarks/c:flint-1"
     }
 }
