@@ -10,12 +10,12 @@ if len(argv) < 2:
 metadata = json.loads(Path(argv[1]).read_text())
 if (
     "memory-leak" not in metadata["categories"]
-    or "resource-leak" not in metadata["categories"]
+    and "resource-leak" not in metadata["categories"]
 ):
     print("This benchmark is not supported by SAVER.")
     exit(1)
 
-basedir = Path() / metadata["buggy"]
+basedir = Path() / metadata["buggyPath"]
 
 report = {
     "err_type": "MEMORY_LEAK",
@@ -31,12 +31,16 @@ report = {
 report_json = basedir / "report.json"
 report_json.write_text(json.dumps(report, indent=4))
 
+def remove_prefix(text, prefix):
+    if text.startswith(prefix):
+        return text[len(prefix):]
+    return text
 
 def make_effect(event, effect, reference_depth):
     return {
         "deref": reference_depth > 0,
         "event": event,
-        "idx": 0 if effect == "$return" else int(effect.removeprefix("$param")),
+        "idx": 0 if effect == "$return" else int(remove_prefix(effect, "$param")),
     }
 
 
@@ -49,7 +53,7 @@ if "resource-leak" in metadata["categories"]:
             "deallocators": [],
         }
         for alloc in spec["allocators"]:
-            alloc = {
+            allocator = {
                 "method_name": alloc["func"],
                 "param_effects": [],
                 "param_types": [],
@@ -57,13 +61,13 @@ if "resource-leak" in metadata["categories"]:
             }
             effect = make_effect("Alloc", alloc["effect"], alloc["reference_depth"])
             if alloc["effect"] != "$return":
-                alloc["param_effects"].append(effect)
-                alloc["return_effect"] = {"deref": False, "event": "", "idx": 0}
+                allocator["param_effects"].append(effect)
+                allocator["return_effect"] = {"deref": False, "event": "", "idx": 0}
             else:
-                alloc["return_effect"] = effect
-            api["allocators"].append(alloc)
+                allocator["return_effect"] = effect
+            api["allocators"].append(allocator)
         for dealloc in spec["deallocators"]:
-            dealloc = {
+            deallocator = {
                 "method_name": dealloc["func"],
                 "param_effects": [],
                 "param_types": [],
@@ -71,11 +75,11 @@ if "resource-leak" in metadata["categories"]:
             }
             effect = make_effect("Free", dealloc["effect"], dealloc["reference_depth"])
             if dealloc["effect"] != "$return":
-                dealloc["param_effects"].append(effect)
-                dealloc["return_effect"] = {"deref": False, "event": "", "idx": 0}
+                deallocator["param_effects"].append(effect)
+                deallocator["return_effect"] = {"deref": False, "event": "", "idx": 0}
             else:
-                dealloc["return_effect"] = effect
-            api["deallocators"].append(dealloc)
+                deallocator["return_effect"] = effect
+            api["deallocators"].append(deallocator)
         apispec.append(api)
     apispec_json = basedir / "api.json"
     apispec_json.write_text(json.dumps(apispec, indent=4))
