@@ -1,0 +1,73 @@
+name: Check configurations
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+
+  find-configurations:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Find configurations
+        id: find-targets
+        run: |
+          configures=$(git diff --name-only origin/main...HEAD -- configures | grep -e "\.json" | xargs -I{e} echo \"{e}\" | tr '\n' ',' | sed 's/,$//')
+          echo "configures=[${configures}]" >> ${GITHUB_OUTPUT}
+      
+    outputs:
+      configures: ${{ steps.find-targets.outputs.configures }}
+
+  check-configurations:
+    needs:
+      - find-configurations
+
+    strategy:
+      matrix:
+        configure: ${{ fromJson(needs.find-configurations.outputs.configures) }}
+
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check the configuration file exists
+        run: test -f ${{ matrix.configure }} && [[ -s ${{ matrix.configure }} ]]
+      - name: Check the configuration file is valid JSON
+        run: jq . ${{ matrix.configure }} > /dev/null
+
+  check-all-test-passed:
+    if: always()
+
+    needs:
+      - check-configurations
+
+    permissions:
+      pull-requests: write
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - run: echo "${{ toJson(needs) }}"
+      - run: exit 1
+        if: ${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}
+      - uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: ':mega: All tests passed!'
+            })
