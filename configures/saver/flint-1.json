@@ -1,0 +1,8 @@
+{
+    "context": "context/saver/starlab-benchmarks",
+    "name": "saver",
+    "tag": "flint-1",
+    "build_args": {
+        "BENCHMARK": "ghcr.io/kupl/starlab-benchmarks/c:flint-1"
+    }
+}
