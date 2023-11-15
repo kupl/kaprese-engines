@@ -60,7 +60,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - run: echo "${{ toJson(needs) }}"
       - run: exit 1
         if: ${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}
       - uses: actions/github-script@v6
