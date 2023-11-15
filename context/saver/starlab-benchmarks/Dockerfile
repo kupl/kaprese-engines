@@ -18,7 +18,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
 WORKDIR /opt
 RUN wget https://koreaoffice-my.sharepoint.com/:u:/g/personal/seongjoon_korea_ac_kr/ETNyGJaRxbFEgA_IHJLyRQ0BQ9egwDuxCnpjdt4AmNHlVw\?e\=KGhbVN\&download\=1 -O saver.tar.gz \
     && tar -xvf saver.tar.gz \
-    rm saver.tar.gz
+    && rm saver.tar.gz
 
 ENV PATH=/opt/saver-1.0/infer/bin:${PATH}
 
