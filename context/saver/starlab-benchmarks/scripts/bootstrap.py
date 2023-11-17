@@ -48,7 +48,7 @@ if "resource-leak" in metadata["categories"]:
     apispec = []
     for kind, spec in metadata["api"].items():
         api = {
-            "resource-type": kind,
+            "resource_type": kind,
             "allocators": [],
             "deallocators": [],
         }
