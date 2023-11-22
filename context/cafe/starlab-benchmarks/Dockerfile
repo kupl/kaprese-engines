@@ -25,7 +25,13 @@ RUN opam install -y \
     && ./build 
 
 WORKDIR /workspace
-RUN cd $(cat metadata.json | jq -r '.buggyPath') \
+COPY ./bin /opt/bin
+ENV PATH="/opt/bin:${PATH}"
+RUN export BUGGY_PATH=$(cat metadata.json | jq -r '.buggyPath') \
+    && cp metadata.json ${BUGGY_PATH}/metadata.json \
+    && cd ${BUGGY_PATH} \
+    && export PROBLEM=$(cat metadata.json | jq -r '.id' | cut -d'-' -f1) \
+    && cp -r /opt/LearnML/benchmarks/c/${PROBLEM} ./references \
     && if [ -f test.ml ]; then \
         sed -i 's/open Src//g' test.ml; \
     fi

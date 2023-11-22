@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+/opt/LearnML/engine/main.native $@
