@@ -1,0 +1,8 @@
+{
+    "context": "context/cafe/starlab-benchmarks",
+    "name": "cafe",
+    "tag": "lambda-22",
+    "build_args": {
+        "BENCHMARK_IMAGE": "ghcr.io/kupl/starlab-benchmarks/ocaml:lambda-22"
+    }
+}
