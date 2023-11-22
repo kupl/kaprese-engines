@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -o pipefail
+/opt/LearnML/engine/main.native $@ | tee cafe.log
+
+if [ $? -eq 0 ]; then
+    PATCH=$(cat cafe.log | awk '/^-----------------------------$/ { c++ } c>=4' | tail -n +3 | awk '/^-----------------------------$/ { c++ } c<=0' | head -n -1)
+    if [ "$PATCH" = "None" ] || [ "$PATCH" = "" ]; then
+        exit 1
+    fi
+    echo "$PATCH" > fixed.ml
+    exit 0
+else
+    exit $?
+fi
