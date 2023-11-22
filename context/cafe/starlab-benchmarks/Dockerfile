@@ -25,7 +25,7 @@ RUN opam install -y \
     && ./build 
 
 WORKDIR /workspace
-RUN cd $(cat metadata.json | jq '.buggyPath') \
+RUN cd $(cat metadata.json | jq -r '.buggyPath') \
     && if [ -f test.ml ]; then \
-        sed -i 's/open Src//g' test.ml \
-    done
+        sed -i 's/open Src//g' test.ml; \
+    fi
