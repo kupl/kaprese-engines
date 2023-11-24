@@ -16,7 +16,7 @@ RUN export DEBIAN_FRONTEND=noninteractive \
     && apt-get autoremove -y && apt-get clean -y && rm -rf /var/lib/apt/list/*
 
 WORKDIR /opt
-RUN wget https://koreaoffice-my.sharepoint.com/:u:/g/personal/seongjoon_korea_ac_kr/ETNyGJaRxbFEgA_IHJLyRQ0BQ9egwDuxCnpjdt4AmNHlVw\?e\=KGhbVN\&download\=1 -O saver.tar.gz \
+RUN wget https://github.com/kupl/SAVER_public/releases/download/saver/SAVER-1.0-SR.tar.gz -O saver.tar.gz \
     && tar -xvf saver.tar.gz \
     && rm saver.tar.gz
 
